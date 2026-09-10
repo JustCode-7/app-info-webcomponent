@@ -31,7 +31,7 @@ export default defineConfig({
       entry: fileURLToPath(new URL('./src/main.ts', import.meta.url)),
       name: 'MyVueWebComponent',
       fileName: () => 'my-webcomponent.js',
-      formats: ['iife'] // IIFE ist ideal für einfaches Einbinden per <script>-Tag
+      formats: ['es'] // 'es' (steht für ESM)
     },
   },
   resolve: {
