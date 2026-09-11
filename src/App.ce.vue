@@ -26,7 +26,7 @@ provide(WidgetToggleKey, { isOpen, toggle })
   <div v-if="isOpen" class="custom-modal-overlay bg-black" @click.self="toggle">
 
     <!-- 2. Das eigentliche zentrierte Modal-Fenster (Nutzt deine bestehenden Bootstrap-Klassen) -->
-    <div class="d-flex border border-3 rounded-4 border-warning flex-column p-2 custom-modal-content bg-dark">
+    <div class="d-flex border border-3 rounded-4 border-warning flex-column p-2 custom-modal-content bg-dark text-light">
 
       <HeaderComponent/>
 
@@ -44,6 +44,19 @@ provide(WidgetToggleKey, { isOpen, toggle })
 
 <style>
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+:host {
+  /* 💡 Setzt ALLE vererbbaren CSS-Eigenschaften auf den Browser-Standard zurück.
+     Damit ist die Host-Webseite zu 100% ausgesperrt! */
+  all: initial;
+
+  /* Da 'all: initial' auch Bootstrap-Schriften zurücksetzt,
+     geben wir hier kurz den Standard wieder mit mit: */
+  font-family: var(--bs-body-font-family);
+  font-size: var(--bs-body-font-size);
+  line-height: var(--bs-body-line-height);
+}
+
 
 /* Das Overlay spannt sich über den gesamten Client-Bildschirm */
 .custom-modal-overlay {
