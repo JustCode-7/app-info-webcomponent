@@ -1,10 +1,3 @@
-import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue({
@@ -30,9 +23,18 @@ export default defineConfig({
       // Hier definierst du den Einstiegspunkt deiner Web Component
       entry: fileURLToPath(new URL('./src/main.ts', import.meta.url)),
       name: 'MyVueWebComponent',
-      fileName: () => 'my-webcomponent.js',
-      formats: ['es'] // 'es' (steht für ESM)
+      formats: ['es'],  // 'es' (steht für ESM)
+      fileName: (format) => {
+        if (format === 'es') return 'my-webcomponent.esm.js' // oder '.mjs'
+        return 'my-webcomponent.js'
+      },
     },
+    rollupOptions: {
+      // 💡 Zwingt Rollup dazu, keine separaten Code-Dateien (Chunks) zu erzeugen
+      output: {
+        inlineDynamicImports: true
+      }
+    }
   },
   resolve: {
     alias: {
@@ -42,3 +44,10 @@ export default defineConfig({
     },
   },
 })
+
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+import vueDevTools from 'vite-plugin-vue-devtools'
+// https://vite.dev/config/
