@@ -1,66 +1,77 @@
 <script setup lang="ts">
 // Hier kannst du globalen Zustand für deine Web Component verwalten
-import {ref} from "vue";
-import WebcomponentIcon from "@/components/icons/WebcomponentIcon.vue";
+import HeaderComponent from "@/components/HeaderComponent.vue";
+import {useWidgetToggle, WidgetToggleKey} from "@/composables/useWidgetToogle.ts";
+import {provide} from "vue";
+import WidgetToggleBtn from "@/components/WidgetToggleBtn.vue";
+import RouterLinkComponent from "@/components/RouterLinkComponent.vue";
+import RouterOutlet from "@/components/RouterOutlet.vue";
 
 defineProps<{
-  msg: string;
-  currentUri?: string;
+  msg?: string;
 }>()
 
-const isOpen = ref(false)
+// 1. Initialisiere den Zustand frisch für DIESE Instanz der Web Component
+const { isOpen, toggle } = useWidgetToggle()
 
-const toggleWidget = () => {
-  isOpen.value = !isOpen.value
-}
+// 2. Stelle den Zustand unter dem definierten Schlüssel für alle Kinder bereit (DI)
+provide(WidgetToggleKey, { isOpen, toggle })
+
 </script>
 
 <template>
-  <!-- Der schwebende Button (Immer sichtbar unten rechts, wenn geschlossen) -->
-  <div class="d-flex w-100 justify-content-center">
-  <button
-      v-if="!isOpen"
-      @click="toggleWidget"
-      class="btn border-warning borderfloating-icon-btn"
-      aria-label="Widget umschalten für weitere Informationen"
-      title="Weitere Apps zum Entdecken"
-  >
-    <span><WebcomponentIcon/></span>
-  </button>
-  </div>
-  <div v-if="isOpen" class="d-flex border border-3 rounded-4 border-warning flex-column p-3 m-1">
+  <WidgetToggleBtn :is-open="isOpen" :toggle="toggle"/>
 
-<div class="d-flex w-100 justify-content-between">
-  <h3 class="font-monospace text-warning">Weitere Apps zum Entdecken</h3>
-      <button
-          @click="toggleWidget"
-          class="btn border-warning border bg-danger"
-          aria-label="Widget umschalten"
-      >
-        <span><WebcomponentIcon/></span>
-      </button>
-</div>
+  <!-- 1. Das Modal-Overlay (Dunkelt den Hintergrund der Host-Seite leicht ab) -->
+  <div v-if="isOpen" class="custom-modal-overlay bg-black" @click.self="toggle">
 
-    <div class="d-flex flex-row">
+    <!-- 2. Das eigentliche zentrierte Modal-Fenster (Nutzt deine bestehenden Bootstrap-Klassen) -->
+    <div class="d-flex border border-3 rounded-4 border-warning flex-column p-2 custom-modal-content bg-dark">
+
+      <HeaderComponent/>
+
+      <div class="d-flex vh-100 flex-row mt-3">
         <!-- Eine vue router innerhalb deiner Web Component -->
-        <div class="border rounded bg-success w-50 p-3 align-content-around">
-          <nav class="flex-column nav nav-pills align-content-center font-monospace">
-            <router-link to="/" class="nav-link text-black fw-bold" active-class="active">Other Apps</router-link>
-            <router-link to="/app-info" class="nav-link text-black fw-bold" active-class="active">App Info</router-link>
-          </nav>
-        </div>
+        <RouterLinkComponent/>
 
         <!-- Hier zeigt der Router das Outlet aka die Componente an -->
-        <div class="w-50">
-          <router-view v-slot="{ Component }">
-            <component :is="Component" :msg="msg" :current-uri="currentUri"/>
-          </router-view>
-        </div>
+        <RouterOutlet :msg="msg"/>
+      </div>
+
     </div>
   </div>
 </template>
 
-
 <style>
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+
+/* Das Overlay spannt sich über den gesamten Client-Bildschirm */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999990; /* Liegt über der gesamten Host-Webseite */
+  display: flex;
+  align-items: center;     /* Zentriert das Modal vertikal */
+  justify-content: center;   /* Zentriert das Modal horizontal */
+}
+
+/* Das eigentliche Modal-Fenster in der Mitte */
+.custom-modal-content {
+  width: 800px;           /* Breite des Modals (nach Wunsch anpassen) */
+  max-width: 90vw;        /* Verhindert, dass es auf Smartphones aus dem Bildschirm bricht */
+  height: 500px;          /* Höhe des Modals (nach Wunsch anpassen) */
+  max-height: 85vh;       /* Verhindert, dass es vertikal den Bildschirm sprengt */
+  overflow: hidden;       /* Hält den Inhalt sauber im abgerundeten Kasten */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Hochwertiger Schatten-Effekt */
+  animation: customModalFadeIn 0.2s ease-out; /* Optionale kleine Einblend-Animation */
+}
+
+/* Kleine Animation beim Aufploppen */
+@keyframes customModalFadeIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 </style>

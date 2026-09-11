@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import InfoIcon from "@/components/icons/InfoIcon.vue";
-import {computed} from "vue";
-const props = defineProps<{
-  currentUri: string
-}>()
+import {computed, onMounted} from "vue";
+import {useAppBaseUrl} from "@/composables/useAppBaseUrl.ts";
 
 export interface AppMap{
   uri:string,
@@ -38,7 +36,7 @@ const filteredAppList = computed(() => {
   const restrictedGamePath = "https://justcode-7.github.io/card-gap-fill-fun/";
   const dartAppPath = "https://justcode-7.github.io/dart-board/";
 
-  if(props.currentUri !== dartAppPath){
+  if(useAppBaseUrl().url !== dartAppPath){
       return appList.filter(app => app.uri !== restrictedGamePath)
     }else {
       return appList
@@ -47,15 +45,14 @@ const filteredAppList = computed(() => {
 </script>
 
 <template>
-  <div class="flex border rounded bg-gray m-3 p-2 justify-center text-center">
-    <h5 title="Andere Apps die dich interessieren könnten">
-      App-Explorer <InfoIcon />
-    </h5>
+  <div class="d-flex flex-column w-50 border rounded bg-gray m-2 justify-content-center align-items-center text-center">
+      <h5 title="Andere Apps die dich interessieren könnten">
+        App-Explorer <InfoIcon />
+      </h5>
 
-    <div class="flex flex-column nav nav-pills row" v-for="app in filteredAppList" :key="app.uri" >
-      <a class="nav-link fw-bold" v-if="currentUri !== app.uri"  :href="app.uri" target="_blank" rel="noopener">{{ app.appName }}</a>
-    </div>
-
+      <div class="d-flex nav nav-pills flex-row" v-for="app in filteredAppList" :key="app.uri" >
+        <a class="nav-link fw-bold" v-if="useAppBaseUrl().url !== app.uri"  :href="app.uri" target="_blank" rel="noopener">{{ app.appName }}</a>
+      </div>
   </div>
 </template>
 <style scoped>

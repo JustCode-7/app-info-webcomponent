@@ -28,20 +28,11 @@
 
 <!-- 2. Hier binden wir deine hochkomplexe Web Component ein -->
 <!-- Du nutzt einfach das in der main.ts registrierte HTML-Tag -->
-<my-webcomponent id="meinWidget"
-        msg="info from integrating App e.g. app-version"></my-webcomponent>
-
+<my-webcomponent msg="info from integrating App e.g. app-version"></my-webcomponent>
 <hr>
 <p>Hier endet die Host-Webseite wieder.</p>
 
 <!-- 3. Der Einstiegspunkt für Vite während der Entwicklung -->
 <script type="module" src="/src/main.ts"></script>
-<script>
-    // 2. Den dynamischen Wert der Host-Seite per JavaScript injizieren
-    const widget = document.getElementById('meinWidget');
-    if (widget) {
-        widget.setAttribute('current-uri', window.location.href);
-    }
-</script>
 </body>
 </html>
